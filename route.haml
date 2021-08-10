@@ -1,0 +1,122 @@
+!!!
+%html
+  %head
+    %meta{:charset => "UTF-8"}/
+    %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}/
+    %link{href: "https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css", rel: "stylesheet"}
+  %body
+    .max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+      .max-w-3xl.mx-auto
+        .flow-root
+
+          %div
+            %div
+              %img.h-32.w-full.object-cover.lg:h-48{:alt => "", :src => "https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"}/
+            :ruby
+              web_combined_route_path = ["https://www.google.com/maps/dir"].tap { |url|
+                route_steps.each do |routestep|
+                  url << "#{routestep.latitude},#{routestep.longitude}"
+                end
+              }.join("/")
+
+              mobile_combined_route_path = ["comgooglemapsurl://www.google.com/maps/dir"].tap { |url|
+                route_steps.each do |routestep|
+                  url << "#{routestep.latitude},#{routestep.longitude}"
+                end
+              }.join("/")
+
+            %div.mb-8
+              %h1.text-2xl.font-bold.text-gray-900.antialiased
+                GrubMapRouter
+              %p
+                Follow these simple steps, dummy!
+
+              .flex.items-center.mx-3.sm:mx-4.xl:ml-0.xl:mr-8.mt-3
+                .mr-1{class: "text-blue-500"}
+                  %svg.h-6.w-6{:fill => "none", :stroke => "currentcolor", :viewbox => "0 0 24 24", :xmlns => "http://www.w3.org/2000/svg"}
+                    %path{:d => "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7", "stroke-linecap" => "round", "stroke-linejoin" => "round", "stroke-width" => "2"}
+                %div 
+                  %a{class: "text-blue-500", href: web_combined_route_path}
+                    Google Maps full journey (web)
+
+
+              .flex.items-center.mx-3.sm:mx-4.xl:ml-0.xl:mr-8.mt-3
+                .mr-1{class: "text-blue-500"}
+                  %svg.h-6.w-6{:fill => "none", :stroke => "currentcolor", :viewbox => "0 0 24 24", :xmlns => "http://www.w3.org/2000/svg"}
+                    %path{:d => "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7", "stroke-linecap" => "round", "stroke-linejoin" => "round", "stroke-width" => "2"}
+                %div 
+                  %a{class: "text-blue-500", href: mobile_combined_route_path}
+                    Google Maps full journey (mobile)
+
+
+            - step = 0
+            - totalsteps = route_steps.select{|rs| rs.type == 'job'}.size
+            %ul.-mb-8
+              - route_steps.each do |routestep|
+                :ruby
+                  color = case routestep.type 
+                          when 'start' 
+                            'green-500'
+                          when 'end'
+                            'red-500'
+                          else
+                            'blue-500'
+                          end
+
+                  title = case routestep.type
+                          when 'start'
+                            'Beginning of journey'
+                          when 'end'
+                            'End of journey'
+                          else
+                            step += 1
+                            "Stop #{step}/#{totalsteps}"
+                          end
+
+                  description = case routestep.type
+                                when 'start'
+                                  'This is the start of your journey.'
+                                when 'end'
+                                  'This is the end of your journey.'
+                                else
+                                  nil
+                                end
+
+
+                %li
+                  .relative.pb-8
+                    %span.absolute.top-5.left-5.-ml-px.h-full.bg-gray-200{"aria-hidden" => "true", class: "w-0.5"}
+                    .relative.flex.items-start.space-x-3
+                      .relative
+                        %div.h-10.w-10.rounded-full.flex.items-center.justify-center.ring-8.ring-white{class: "bg-#{color}"}
+                        %span.absolute.-right-1.bg-white.rounded-tl.py-px{:class => "-bottom-0.5 px-0.5"}
+                          %svg.h-5.w-5{class: "text-#{color}", :fill => "currentColor", :viewbox => "0 0 20 20", :xmlns => "http://www.w3.org/2000/svg"}
+                            %path{"clip-rule" => "evenodd", :d => "M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z", "fill-rule" => "evenodd"}
+                      .min-w-0.flex-1
+                        %div
+                          .text-sm
+                            .font-medium.text-gray-900 
+                              = title
+                          %p.text-sm.text-gray-500{:class => "mt-0.5"}
+                            = routestep.arrival
+                        - if description
+                          .mt-2.text-sm.text-gray-700
+                            %p
+                              = description
+
+                        .flex.items-center.mx-3.sm:mx-4.xl:ml-0.xl:mr-8.mt-3
+                          .mr-1{class: "text-#{color}"}
+                            %svg.h-6.w-6{:fill => "none", :stroke => "currentColor", :viewbox => "0 0 24 24", :xmlns => "http://www.w3.org/2000/svg"}
+                              %path{:d => "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7", "stroke-linecap" => "round", "stroke-linejoin" => "round", "stroke-width" => "2"}
+                          %div 
+                            %a{class: "text-#{color}", href: "https://maps.google.com/?q=@#{routestep.latitude},#{routestep.longitude}"}
+                              Google Maps (web)
+
+                        .flex.items-center.mx-3.sm:mx-4.xl:ml-0.xl:mr-8.mt-3
+                          .mr-1{class: "text-#{color}"}
+                            %svg.h-6.w-6{:fill => "none", :stroke => "currentColor", :viewbox => "0 0 24 24", :xmlns => "http://www.w3.org/2000/svg"}
+                              %path{:d => "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7", "stroke-linecap" => "round", "stroke-linejoin" => "round", "stroke-width" => "2"}
+                          %div 
+                            %a{class: "text-#{color}", href: "comgooglemapsurl://maps.google.com/?q=@#{routestep.latitude},#{routestep.longitude}"}
+                              Google Maps (mobile)
+
